@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# coding: utf-8
+import pandas as pd
+
+# Step 1: Import the data into a DataFrame with headers
+df = pd.read_excel(r"c:\Users\merie\OneDrive\Bureau\WGU\D598\Task2\New folder\D598 Data Set.xlsx.xlsx")
+
+# Step 2: Check for duplicates
+duplicates = df[df.duplicated()]
+if len(duplicates) > 0:
+    print(f"Number of duplicates: {len(duplicates)}")
+    print("Duplicates found:")
+    print(duplicates)
+    # Handle duplicates (e.g., removing them)
+    df = df.drop_duplicates()
+else:
+    print("No duplicates found.")
+
+# Step 3: Group data by 'Business State' and calculate statistics
+grouped_by_state = df.groupby('Business State').agg({
+    'Total Long-term Debt': ['mean', 'median', 'min', 'max'],
+    'Total Equity': ['mean', 'median', 'min', 'max'],
+    'Debt to Equity': ['mean', 'median', 'min', 'max'],
+    'Total Liabilities': ['mean', 'median', 'min', 'max'],
+    'Total Revenue': ['mean', 'median', 'min', 'max'],
+    'Profit Margin': ['mean', 'median', 'min', 'max']
+})
+
+# Store results in a new DataFrame
+grouped_by_state.columns = ['_'.join(col).strip() for col in grouped_by_state.columns.values]
+grouped_by_state_df = grouped_by_state.reset_index()
+
+print("Grouped statistics by Business State:")
+print(grouped_by_state_df)
+
+# Step 4: Filter with negative debt-to-equity ratios
+negative_debt_to_equity = df[df['Debt to Equity'] < 0]
+
+# Step 5: Identify underperforming companies
+if not negative_debt_to_equity.empty:
+    print("Underperforming companies with negative debt-to-equity ratio:")
+    print(negative_debt_to_equity)
+    # Make recommendations for improvement 
+    print("Recommendations for improvement: reduce debt or increase equity.")
+else:
+    print("No underperforming companies found.")
+
+# Step 6: Compute debt-to-income ratio for each business
+df['Debt to Income Ratio'] = df['Total Long-term Debt'] / df['Total Revenue']
+
+# Step 7: Concatenate the Debt-to-Income Ratio DataFrame with the original DataFrame
+final_df = pd.concat([df, df[['Business ID', 'Debt to Income Ratio']]], axis=1)
+
+print("Final DataFrame with Debt-to-Income Ratios:")
+print(final_df[['Business ID', 'Business State', 'Debt to Income Ratio']])
