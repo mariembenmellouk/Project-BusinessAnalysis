@@ -1,9 +1,52 @@
 #!/usr/bin/env python
 # coding: utf-8
 import pandas as pd
-
 # Step 1: Import the data into a DataFrame with headers
 df = pd.read_excel(r"c:\Users\merie\OneDrive\Bureau\WGU\D598\Task2\New folder\D598 Data Set.xlsx.xlsx")
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Visualization
+
+# Bar Chart for Mean Debt to Equity Ratio by Business State
+plt.figure(figsize=(10, 8))
+mean_debt_to_equity = df.groupby('Business State')['Debt to Equity'].mean().sort_values()
+mean_debt_to_equity.plot(kind='bar', color='pink')
+plt.title('Mean Debt to Equity Ratio by Business State')
+plt.xlabel('Business State')
+plt.ylabel('Mean Debt to Equity Ratio')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Boxplot of Total Revenue by Business State
+plt.figure(figsize=(10, 8))
+sns.boxplot(x='Business State', y='Total Revenue', data=df, palette='dark')
+plt.title('Total Revenue Distribution by Business State')
+plt.xlabel('Business State')
+plt.ylabel('Total Revenue')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Pie Chart of Proportion of Businesses by Business State
+plt.figure(figsize=(10,10))
+business_count_by_state = df['Business State'].value_counts()
+business_count_by_state.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=sns.color_palette('pastel'))
+plt.title('Proportion of Businesses by Business State')
+plt.ylabel('')  
+plt.show()
+
+# Scatter Plot for Total Liabilities vs. Total Long-term Debt
+plt.figure(figsize=(10, 15))
+sns.scatterplot(x='Total Long-term Debt', y='Total Liabilities', hue='Business State', data=df, palette='pastel')
+plt.title('Total Liabilities vs Total Long-term Debt by Business State')
+plt.xlabel('Total Long-term Debt')
+plt.ylabel('Total Liabilities')
+plt.legend(title='Business State', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
 
 # Step 2: Check for duplicates
 duplicates = df[df.duplicated()]
